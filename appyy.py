@@ -9,9 +9,14 @@ Original file is located at
 import pandas as pd
 import numpy as np
 import streamlit as st
-import plotly.express as px
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+
+# Try to import plotly and tensorflow, handle import errors
+try:
+    import plotly.express as px
+except ImportError as e:
+    st.error(f"Plotly could not be imported: {e}")
 
 try:
     import tensorflow as tf
@@ -107,10 +112,13 @@ else:
     st.warning("Prediction model is not available.")
 
 # Data visualization using Plotly
-st.subheader("Historical Price Trends")
-price_trends = data.groupby(['Year', 'Month'])['Price'].mean().reset_index()
-fig = px.line(price_trends, x='Year', y='Price', title='Average Maize Price Over Years')
-st.plotly_chart(fig, use_container_width=True)
+if 'px' in locals():
+    st.subheader("Historical Price Trends")
+    price_trends = data.groupby(['Year', 'Month'])['Price'].mean().reset_index()
+    fig = px.line(price_trends, x='Year', y='Price', title='Average Maize Price Over Years')
+    st.plotly_chart(fig, use_container_width=True)
+else:
+    st.warning("Plotly is not available for data visualization.")
 
 # Additional Features
 st.subheader("Additional Information")
@@ -119,6 +127,7 @@ with st.expander("See explanation"):
         This application predicts the maize crop price based on historical data, 
         including production volumes, annual temperature, and rainfall for various regions in Kenya.
     """)
+
 
 
 
