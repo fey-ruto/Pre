@@ -24,7 +24,7 @@ def load_data(file_path):
     data = pd.read_csv(file_path)
     return data
 
-file_path = '/content/Food_Prices_Kenya.csv'
+file_path = 'Food_Prices_Kenya.csv'
 data = load_data(file_path)
 
 # Data preprocessing
@@ -107,6 +107,7 @@ st.plotly_chart(fig, use_container_width=True)
 st.subheader("Additional Information")
 with st.expander("See explanation"):
     st.write("""
-        This application predicts the maize crop price based on historical data,
+        This application predicts the maize crop price based on historical data, 
         including production volumes, annual temperature, and rainfall for various regions in Kenya.
     """)
+
