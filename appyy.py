@@ -10,25 +10,31 @@ import pandas as pd
 import numpy as np
 import streamlit as st
 
-# Try to import plotly and sklearn, handle import errors
+# Try to import plotly, sklearn, and tensorflow, handle import errors
 try:
     import plotly.express as px
+    plotly_imported = True
 except ImportError as e:
     st.error(f"Plotly could not be imported: {e}")
+    plotly_imported = False
 
 try:
     from sklearn.model_selection import train_test_split
     from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+    sklearn_imported = True
 except ImportError as e:
     st.error(f"Scikit-learn could not be imported: {e}")
+    sklearn_imported = False
 
 try:
     import tensorflow as tf
     from tensorflow.keras.models import Sequential
     from tensorflow.keras.layers import Dense
     from tensorflow.keras.callbacks import EarlyStopping
+    tensorflow_imported = True
 except ImportError as e:
     st.error(f"TensorFlow could not be imported: {e}")
+    tensorflow_imported = False
 
 # Load the dataset
 @st.cache
@@ -62,9 +68,13 @@ features = ['Month', 'Year', 'Regions', 'Annual Rainfall', 'Annual Temperature']
 X = data[features]
 y = data['Price']
 X = pd.get_dummies(X, columns=['Regions'], drop_first=True)
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-if 'tf' in locals():
+if sklearn_imported:
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+else:
+    st.error("Scikit-learn is not available. The script cannot continue.")
+
+if tensorflow_imported:
     # Define the ANN model
     model = Sequential()
     model.add(Dense(64, input_dim=X_train.shape[1], activation='relu'))
@@ -109,14 +119,14 @@ for col in X.columns:
         input_data[col] = 0
 
 # Predict using the ANN model if available
-if 'model' in locals():
+if tensorflow_imported and 'model' in locals():
     predicted_price = model.predict(input_data)[0][0]
     st.write(f"Predicted Maize Price: {predicted_price} KES")
 else:
     st.warning("Prediction model is not available.")
 
 # Data visualization using Plotly
-if 'px' in locals():
+if plotly_imported:
     st.subheader("Historical Price Trends")
     price_trends = data.groupby(['Year', 'Month'])['Price'].mean().reset_index()
     fig = px.line(price_trends, x='Year', y='Price', title='Average Maize Price Over Years')
@@ -131,8 +141,6 @@ with st.expander("See explanation"):
         This application predicts the maize crop price based on historical data, 
         including production volumes, annual temperature, and rainfall for various regions in Kenya.
     """)
-
-
 
 
 
