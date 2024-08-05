@@ -9,14 +9,18 @@ Original file is located at
 import pandas as pd
 import numpy as np
 import streamlit as st
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
-# Try to import plotly and tensorflow, handle import errors
+# Try to import plotly and sklearn, handle import errors
 try:
     import plotly.express as px
 except ImportError as e:
     st.error(f"Plotly could not be imported: {e}")
+
+try:
+    from sklearn.model_selection import train_test_split
+    from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+except ImportError as e:
+    st.error(f"Scikit-learn could not be imported: {e}")
 
 try:
     import tensorflow as tf
@@ -127,6 +131,7 @@ with st.expander("See explanation"):
         This application predicts the maize crop price based on historical data, 
         including production volumes, annual temperature, and rainfall for various regions in Kenya.
     """)
+
 
 
 
